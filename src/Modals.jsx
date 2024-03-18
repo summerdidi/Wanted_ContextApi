@@ -1,18 +1,28 @@
-import React, { useContext } from "react";
-import { ModalsStateContext } from "./ModalsContext";
+import React, {useContext} from "react";
+import ReactDom from 'react-dom';
+import {ModalsDispatchContext, ModalsStateContext} from "./ModalsContext";
 
 const Modals = () => {
-  const openedModals = useContext(ModalsStateContext);
+    const openedModals = useContext(ModalsStateContext);
+    const {close} = useContext(ModalsDispatchContext);
 
-  return (
-    <div>
-      {openedModals.map((modal, index) => {
-        const { Component, props, isOpen } = modal;
-
-        return <Component key={index} isOpen={isOpen} {...props} />;
-      })}
-    </div>
-  );
+    return ReactDom.createPortal(
+        <div className={'modal-wrapper'}>
+            {openedModals.map((modalInfo, index) => {
+                const {Component, props, isOpen} = modalInfo;
+                const onClose = () => {
+                    console.log('닫기')
+                    close(Component)
+                  
+                }
+                return <Component
+                    key={index}
+                    isOpen={isOpen}
+                    onClose={onClose} {...props} />;
+            })}
+        </div>
+        , document.body
+    );
 };
 
 export default Modals;
